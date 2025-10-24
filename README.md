@@ -70,5 +70,4 @@ IP               MAC               Hostname
 
 This project is open-source and available under the MIT License.
 ```
-
-You can paste this directly into your `README.md` file. Let me know if you'd like to add installation steps for Windows or a troubleshooting section.
+troubleshooting section.
