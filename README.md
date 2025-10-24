@@ -68,6 +68,4 @@ IP               MAC               Hostname
 
 ## License
 
-This project is open-source and available under the MIT License.
 ```
-troubleshooting section.
