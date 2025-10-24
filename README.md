@@ -1,83 +1,74 @@
-# LAN Scanner (ARP)
 
-A simple Python LAN scanner that discovers devices on a local network using ARP requests.  
-The script reports IP address, MAC address, and hostname (if available). It can auto-detect the host network or accept a user-specified CIDR.
+# LAN Scanner using ARP Requests
 
-> **Warning / Ethics:** Only run this tool on networks you own or have explicit permission to scan.
-
----
+This Python script scans your local network using ARP requests to identify active devices. It uses `scapy` for packet crafting and `netifaces` to auto-detect the local subnet.
 
 ## Features
-- Auto-detects local network CIDR (using `netifaces`)
-- Performs an ARP scan to discover devices
-- Resolves reverse DNS hostnames where available
-- Outputs results in a readable table with scan time
 
----
+- Auto-detects the default network CIDR
+- Sends ARP requests to discover devices on the LAN
+- Displays IP address, MAC address, and hostname
+- Customizable timeout for ARP replies
+- Simple command-line interface
 
 ## Requirements
-- Python 3.8+
-- `scapy`
-- `netifaces`
-- (optional) `sudo` / root privileges to send ARP packets
 
----
+Install the required Python packages:
 
-## Installation
-1. Clone or copy this repository folder to your machine.
-2. Install dependencies:
 ```bash
-pip3 install scapy netifaces
-Usage
-Run the script as root (required to send ARP packets):
+pip install scapy netifaces
+```
 
-Auto-detect network:
+Note: This script must be run with root privileges to send ARP packets.
 
-bash
-Copy code
-sudo python3 lanscanner.py
-Specify a CIDR:
+## Usage
 
-bash
-Copy code
-sudo python3 lanscanner.py -n 192.168.1.0/24
-Options:
+```bash
+sudo python lan_scanner.py [-n NETWORK_CIDR] [-t TIMEOUT]
+```
 
-lua
-Copy code
--n, --network   Target network in CIDR (e.g. 192.168.1.0/24)
--t, --timeout   ARP reply timeout seconds (default: 2)
-Example Output
-nginx
-Copy code
-Found 3 device(s) — scan time: 2.34s
-IP               MAC                Hostname
+### Options
+
+| Option | Description |
+|--------|-------------|
+| `-n`, `--network` | Target network in CIDR format (e.g. `192.168.1.0/24`). If omitted, the script attempts to auto-detect your local subnet. |
+| `-t`, `--timeout` | Timeout in seconds for ARP replies (default: `2`) |
+
+### Example
+
+```bash
+sudo python lan_scanner.py -n 192.168.0.0/24 -t 3
+```
+
+## Output
+
+The script prints a table of discovered devices:
+
+```
+Found 5 device(s) — scan time: 2.01s
+IP               MAC               Hostname
 ------------------------------------------------------------
-192.168.1.1      aa:bb:cc:dd:ee:ff  router.local
-192.168.1.10     11:22:33:44:55:66  laptop
-192.168.1.45     77:88:99:aa:bb:cc  printer
-Notes & Troubleshooting
-On macOS, Scapy’s routing/packet behavior can be unreliable. If auto-detect fails, pass -n <CIDR> manually.
+192.168.0.1      aa:bb:cc:dd:ee:ff router.local
+192.168.0.101    11:22:33:44:55:66 laptop.local
+...
+```
 
-If you see permission errors, ensure you run the script with sudo or as root.
+## How It Works
 
-ARP scanning only discovers devices on the same Layer‑2 network segment (same switch / Wi‑Fi AP). It will not find devices across routers.
+- Uses `netifaces` to detect the default gateway interface and subnet
+- Crafts ARP requests using `scapy` and sends them to all IPs in the subnet
+- Collects responses and resolves hostnames using `socket.gethostbyaddr`
+- Displays results in a clean, sorted table
 
-Extending the Project
-Ideas you can add:
+## Notes
 
-OUI/vendor lookup for MAC → manufacturer
+- Works only on IPv4 networks
+- Requires root privileges to send raw packets
+- Hostname resolution may fail for some devices (shown as blank)
 
-Lightweight port probes to guess device type
+## License
 
-Save results to CSV or SQLite
+This project is open-source and available under the MIT License.
+```
 
-Flask dashboard to visualize devices over time
-
-Alerting for new/unexpected devices
-
-License
-This project is released under the MIT License. See LICENSE for details.
-
-Contact
-Created by Lourenco DaSilva — feel free to open issues or PRs.
+You can paste this directly into your `README.md` file. Let me know if you'd like to add installation steps for Windows or a troubleshooting section.
